@@ -61,8 +61,4 @@ yarn genkit:dev
 pnpm genkit:dev
 ```
 
-## License
-
-[Choose a License]
-
-    
+} 
