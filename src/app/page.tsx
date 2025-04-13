@@ -8,8 +8,47 @@ import {Input} from '@/components/ui/input';
 import {Separator} from '@/components/ui/separator';
 import {Textarea} from '@/components/ui/textarea';
 import {toast} from '@/hooks/use-toast';
+import {Copy} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
+
+interface CopyButtonProps {
+  text: string;
+}
+
+const CopyButton: React.FC<CopyButtonProps> = ({text}) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setIsCopied(true);
+      toast({
+        title: 'Copied to clipboard',
+      });
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    } catch (error: any) {
+      toast({
+        title: 'Error copying to clipboard',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={handleCopy}
+      disabled={isCopied}
+    >
+      {isCopied ? 'Copied' : <Copy className="h-4 w-4"/>}
+    </Button>
+  );
+};
 
 export default function Home() {
   const [story, setStory] = useState<GenerateStoryOutput | null>(null);
@@ -98,7 +137,10 @@ export default function Home() {
           <Separator className="my-4" />
           {story && (
             <div className="mt-4">
-              <h2 className="text-xl font-semibold text-foreground mb-2">Generated Story</h2>
+              <h2 className="flex items-center space-x-2 text-xl font-semibold text-foreground mb-2">
+                <span>Generated Story</span>
+                <CopyButton text={story.story}/>
+              </h2>
               <Card className="bg-secondary text-secondary-foreground shadow-sm rounded-md">
                 <CardContent className="prose prose-sm m-4 max-w-none">
                   {story.story}
@@ -113,7 +155,10 @@ export default function Home() {
               </Button>
               {enhancedStory && (
                 <div className="mt-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Enhanced Story</h3>
+                  <h3 className="flex items-center space-x-2 text-lg font-semibold text-foreground mb-2">
+                    <span>Enhanced Story</span>
+                    <CopyButton text={enhancedStory.enhancedStory}/>
+                  </h3>
                   <Card className="bg-secondary text-secondary-foreground shadow-sm rounded-md">
                     <CardContent className="prose prose-sm m-4 max-w-none">
                       {enhancedStory.enhancedStory}
